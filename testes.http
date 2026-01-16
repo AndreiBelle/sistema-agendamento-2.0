@@ -1,0 +1,14 @@
+### TESTE 1: Criar uma Reunião (POST)
+POST http://localhost:3000/reunioes
+Content-Type: application/json
+
+{
+    "nome": "Reunião Teste VS Code",
+    "sala": "Sala 02",
+    "horario": "09:00"
+}
+
+###
+
+### TESTE 2: Listar todas as Reuniões (GET)
+GET http://localhost:3000/reunioes

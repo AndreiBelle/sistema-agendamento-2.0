@@ -1,0 +1,12 @@
+sistema-agendamento/
+│
+├── src/                  <-- Pasta onde vamos manter o código fonte
+|   ├── database/         <-- Conexões de SQL
+│   ├── controllers/      <-- Validações/Regras
+│   ├── models/           <-- O formato dos dados/Banco de dados
+│   ├── routes/           <-- Caminhos/URLs
+│   └── app.js            <-- Configurações do Express
+│
+├── package.json          <-- O "RG" do projeto
+├── .gitignore            <-- Arquivos que não vão para o GitHub
+└── server.js             <-- Utilizado somente para a ligação do servidor.
