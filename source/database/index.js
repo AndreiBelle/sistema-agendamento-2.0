@@ -2,19 +2,19 @@
 const mysql = require('mysql2/promise');
 
 const pool = mysql.createPool ({
-    host: 'localhost',
-    user: 'root',
-    password: '1234',
-    database: 'sistema_agendamentos',
+    host: process.env.DB_HOST,
+    user: process.env.DB_USER,
+    password: process.env.DB_PASS,
+    database: process.env.DB_NAME,
     waitForConnections: true,
     connectionLimit: 10,
     queueLimit: 0
 });
 
 pool.getConnection().then(conn => {
-    console.log('deu certo!!')
+    console.log('Conectado ao Banco com sucesso!')
 }).catch((err) => {
-    console.error('VISH DEU ERRADO ' + err)
+    console.error('Falha na conexão: ' + err)
 });
 
 module.exports = pool;
