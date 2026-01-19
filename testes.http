@@ -5,10 +5,39 @@ Content-Type: application/json
 {
     "nome": "Reunião Teste VS Code",
     "sala": "Sala 02",
+    "horario": "10:00"
+}
+
+###
+
+POST http://localhost:3000/reunioes
+Content-Type: application/json
+
+{
+    "nome": "teste valida",
+    "sala": "Sala 02",
     "horario": "09:00"
 }
+
 
 ###
 
 ### TESTE 2: Listar todas as Reuniões (GET)
 GET http://localhost:3000/reunioes
+
+###
+
+### Deletar a reunião "4"
+DELETE http://localhost:3000/reunioes/4
+
+###
+
+### Editar reunião "5"
+PUT http://localhost:3000/reunioes/5
+Content-Type: application/json
+
+{
+    "nome": "editado!",
+    "sala": "EditadoSALA",
+    "horario": "EditadoHR"
+}

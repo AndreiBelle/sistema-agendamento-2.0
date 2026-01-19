@@ -1,3 +1,4 @@
 node_modules
 .env
-regras-pastas
+regras-pastas.txt
+testes
