@@ -1,4 +1,4 @@
 node_modules
 .env
 regras-pastas.txt
-testes
+testes.http
