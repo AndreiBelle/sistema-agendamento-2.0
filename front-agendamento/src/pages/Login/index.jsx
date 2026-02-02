@@ -1,6 +1,9 @@
 import api from '../../services/api'
 import { useState } from "react";
 import styled from "styled-components";
+import {useNavigate} from 'react-router-dom'
+import { toast } from 'react-toastify'
+
 
 const Container = styled.div`
     display: flex;
@@ -56,9 +59,11 @@ const Button = styled.button`
     }
 `;
 
-function Login(){
+function Login() {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+
+    const navigate = useNavigate();
 
     async function EnviarDados(event){
         event.preventDefault();
@@ -68,14 +73,23 @@ function Login(){
                 password: password
             });
 
-            console.log("Resposta do servidor:", response.data);
-            alert(`Login realizado com sucesso! Token: ${response.data.token}`);
+            const {token, usuario} = response.data;
+
+            localStorage.setItem('token', token);
+            localStorage.setItem('usuario_id', usuario.id)
+            localStorage.setItem('nomeUsuario', response.data.usuario.nome);
+
+            toast.success("Login realizado com sucesso!");
+
+            api.defaults.headers.Authorization = `Bearer ${response.data.token}`;
+            navigate('/dashboard')
+
         } catch (err){
             console.log("Erro ao logar: " + err)
             if (err.response) {
-                alert(err.response.data.message || "Erro no servidor");
+                toast.error(err.response.data.message || "Erro no servidor");
             } else {
-                alert("Erro de cnexão. Verifique se o Back-end está rodando.");
+                toast.error("Erro de conexão. Verifique se o Back-end está rodando.");
             }
         }
     }

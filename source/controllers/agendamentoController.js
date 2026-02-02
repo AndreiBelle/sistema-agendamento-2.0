@@ -1,10 +1,10 @@
 //
-const agendamentoModel = require('../models/agendamentosModel');
+const agendamentosModel = require('../models/agendamentosModel');
 
 module.exports = {
     listarAgendamentos: async (req, res) => {
         try {
-        const lista = await agendamentoModel.listarTodos();
+        const lista = await agendamentosModel.listarTodos();
         return res.status(200).json(lista);
         } catch (err) {
             console.error(err)
@@ -13,9 +13,9 @@ module.exports = {
     },
 
     criarAgendamento: async (req, res) => {
-        const {nome, sala, horario} = req.body;
+        const {sala_id, usuario_id, titulo, data_inicio, data_fim} = req.body;
 
-        if(!nome || !sala || !horario)
+        if(!sala_id || !usuario_id || !titulo || !data_inicio || !data_fim)
         {
             return res.status(400).json({
                 erro: "Dados inválidos",
@@ -23,19 +23,19 @@ module.exports = {
             });
         }
         try {
-            const ExisteAgendmento = await agendamentoModel.buscarPorHorario(sala, horario)
-            if (ExisteAgendmento) 
+            const Existeconflito = await agendamentosModel.VerificaConflitos(sala_id, data_inicio, data_fim)  
+            if (Existeconflito) 
             {
                 return res.status(409).json({
                     erro: "Conflito de agendamento",
-                    mensagem: `A ${sala} já está ocupada às ${horario}.`
+                    mensagem: `Já existe uma reunião nesse horário.`
                 });
             }
-        const novoAgendamento = await agendamentoModel.salvar({nome, sala, horario});
+        const novoAgendamento = await agendamentosModel.salvar({sala_id, usuario_id, titulo, data_inicio, data_fim});
         return res.status(201).json(novoAgendamento)}
         catch (err) {
             console.error(err);
-            return res.status(500).json({mensagem: "Erro ao slavar agendamento, tente novamente mais tarde."});
+            return res.status(500).json({mensagem: "Erro ao salvar agendamento, tente novamente mais tarde."});
         }
     },
 
@@ -44,7 +44,7 @@ module.exports = {
 
         try
         {
-            await agendamentoModel.Deletar(id)
+            await agendamentosModel.Deletar(id)
 
             res.status(204).send();
         }catch (err) {
@@ -53,17 +53,32 @@ module.exports = {
         }
     },
 
-    AtualizarAtendimento: async (req, res) => {
+    BuscarAgendamento: async (req, res) => {
+        try {
+            const {id} =req.params;
+            const agendamento = await agendamentosModel.BuscarPorId(id);
+            if (!agendamento) {
+                return res.status(404).json({ mensagem: "Não encontrado!"});
+                return res.json(agendamento);
+            }
+        } catch (err) {
+            return res.status(500).json({ mensagem: "Erro ao buscar."});
+        }
+    },
+
+    atualizarAgendamento: async (req, res) => {
         const {id} = req.params;
-        const {nome, sala, horario} = req.body;
-        try
-        {
-            await agendamentoModel.Editar(id, {nome, sala, horario});
-            res.status(200).json({id, nome, sala, horario});
-        }catch (err) {
-            console.error(err)
-            res.status(500).json({mensagem: "Erro ao editar o agendamento: "+err})
+        const {sala_id, titulo, data_inicio, data_fim} = req.body;
+
+        try {
+            await agendamentosModel.Editar(id, {
+                sala_id, titulo, data_inicio, data_fim
+            });
+
+            return res.status(200).json({ mensagem: "Atualizado com sucesso"});
+        } catch (err) {
+            console.error(err);
+            return res.status(500).json({ mensagem: "Erro ao atualizar " + err})
         }
     }
-
-}
+};

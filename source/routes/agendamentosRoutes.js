@@ -3,9 +3,11 @@ const router = express.Router();
 
 const agendamentoController = require('../controllers/agendamentoController');
 
-router.get('/reunioes', agendamentoController.listarAgendamentos);
-router.post('/reunioes', agendamentoController.criarAgendamento);
-router.delete('/reunioes/:id', agendamentoController.CancelarAgendamento);
-router.put('/reunioes/:id', agendamentoController.AtualizarAtendimento);
+router.get('/', agendamentoController.listarAgendamentos);
+router.get('/:id', agendamentoController.BuscarAgendamento);
+router.post('/', agendamentoController.criarAgendamento);
+router.put('/:id', agendamentoController.atualizarAgendamento);
+router.delete('/:id', agendamentoController.CancelarAgendamento);
+
 
 module.exports = router
