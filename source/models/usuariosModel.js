@@ -2,9 +2,16 @@ const pool = require ('../database/index');
 
 module.exports = {
     buscarUsuarioPorEmail: async (email) => {
-    const SQL = 'SELECT * FROM usuarios WHERE email= ?';
+    const sql = 'SELECT * FROM usuarios WHERE email= ?';
 
-    const [linhas] = await pool.execute(SQL, [email]);
-    return linhas[0]
+    const [linhas] = await pool.execute(sql, [email]);
+    return linhas;
+    },
+
+    novoUsuario: async (dados) => {
+        const sql = 'INSERT INTO usuarios (nome, email, senha) VALUES (?, ?, ?)'
+
+        const [linhas] = await pool.execute(sql, [dados.nome, dados.email, dados.senhaCript])
+        return linhas;
     }
 };

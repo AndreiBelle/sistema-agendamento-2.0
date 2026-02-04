@@ -41,6 +41,24 @@ const LogoutButton = styled.button`
   }
 `;
 
+const CadastroButton = styled.button`
+  color: #0400ffd3;
+  padding: 8px 16px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: all 0.2s;
+  display: flex;
+  text-align: right;
+
+
+   &:hover {
+    background-color: #0400ffd3;
+    color: white;
+  }
+
+`;
+
 const Content = styled.div`
   max-width: 1000px;
   margin: 40px auto;
@@ -199,12 +217,25 @@ function Dashboard() {
     navigate('/');
   }
 
+  function handleCadastro() {
+
+    if (nomeUsuario == "Recepção" || nomeUsuario == "Teste Admin") {
+      navigate('/cadastro');
+    } else {
+      toast.error('Você não tem permissão para cadastrar novos usuários!')
+
+    }
+  }
+
   return (
     
     <Container>
       <Navbar>
-        <Logo>Olá {nomeUsuario}, Bem-vindo ao Sistema de Agendamentos </Logo>
+        <Logo>Olá {nomeUsuario}! </Logo>
+        <CadastroButton onClick={handleCadastro}>Cadastrar usuario</CadastroButton>
         <LogoutButton onClick={handleLogout}>Sair</LogoutButton>
+        
+
       </Navbar>
 
       <Content>

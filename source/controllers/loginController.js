@@ -12,11 +12,14 @@ const login = async (req, res) => {
     
     } 
     try {
-        const usuario = await usuariosModel.buscarUsuarioPorEmail(email);
+        const procuraUsuario = await usuariosModel.buscarUsuarioPorEmail(email);
+        const usuario = procuraUsuario[0]
 
         if(!usuario) {
             return res.status(401).json({message: 'Credenciais inválidas'})
         }
+
+        
 
         const senhaValida = await bcrypt.compare(password, usuario.senha);
 

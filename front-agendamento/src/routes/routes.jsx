@@ -5,13 +5,13 @@ import Dashboard from '../pages/Dashboard'
 import NovaReserva from '../pages/NovaReserva'
 import PrivateRoute from '../components/PrivateRoute';
 import EditarReserva from '../pages/EditarReserva';
+import Cadastro from '../pages/Cadastro/index';
 
 function AppRoutes() {
     return (
         <Routes>
             <Route path='/' element={<Login />} />
             
-
             <Route
             path='/dashboard'
             element={
@@ -35,6 +35,15 @@ function AppRoutes() {
             element={
                 <PrivateRoute>
                     <EditarReserva />
+                </PrivateRoute>
+            }
+            />
+
+            <Route 
+            path='/cadastro'
+            element={
+                <PrivateRoute>
+                    <Cadastro />
                 </PrivateRoute>
             }
             />
