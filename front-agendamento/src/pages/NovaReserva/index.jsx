@@ -110,6 +110,8 @@ function NovaReserva() {
             }
         }
         carregarSalas();
+
+       
     }, []);
 
     async function handleSubmit(event) {

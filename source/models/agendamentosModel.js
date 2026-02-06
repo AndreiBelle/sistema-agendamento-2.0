@@ -1,10 +1,11 @@
+
 const pool = require('../database/index'); // Importando o pool
 
 module.exports = {
     listarTodos: async () => {
-        const [linhas] = await pool.execute('SELECT a.id, a.data_inicio, a.data_fim, a.titulo, s.nome AS nome_sala, u.nome AS nome_usuario FROM agendamentos a JOIN salas s ON a.sala_id = s.id JOIN usuarios u on a.usuario_id = u.id ORDER BY a.data_inicio ASC'); 
-        return linhas;                                             // O  [] ignora os dados técnicos das tabelas e traz só os dados         
-        //por isso a const fica como [linhas];
+        // O  [] ignora os dados técnicos das tabelas e traz só os dados 
+        const [linhas] = await pool.execute('SELECT a.id, a.data_inicio, a.data_fim, a.titulo, s.nome AS nome_sala, u.nome AS nome_usuario FROM agendamentos a JOIN salas s ON a.sala_id = s.id JOIN usuarios u on a.usuario_id = u.id WHERE DATE_ADD(a.data_fim, INTERVAL 5 MINUTE) > NOW() AND a.data_inicio <= NOW() + INTERVAL 30 DAY ORDER BY a.data_inicio DESC'); 
+        return linhas; //por isso a const fica como [linhas];
     },
 
     salvar: async (dados) => {
@@ -12,6 +13,7 @@ module.exports = {
 
         const [resultado] = await pool.execute(sql, [dados.sala_id, dados.usuario_id, dados.titulo, dados.data_inicio, dados.data_fim]);
         return { id: resultado.insertId, ...dados}
+
     },
 
     VerificaConflitos: async (sala_id, data_inicio, data_fim) => {
@@ -35,7 +37,7 @@ module.exports = {
     },
 
     Editar: async (id, dados) => {
-        const sql = 'UPDATE agendamentos SET sala_id = ?, titulo = ?, data_inicio = ?, data_fim = ? WHERE id = ?'
+        const sql = 'UPDATE agendamentos SET sala_id = ?, usuario_id = ?, titulo = ?, data_inicio = ?, data_fim = ? WHERE id = ?'
 
         const [resultado] = await pool.execute (sql, [dados.sala_id, dados.titulo, dados.data_inicio, dados.data_fim, id])
         return resultado
@@ -45,6 +47,10 @@ module.exports = {
         const sql = 'SELECT * FROM agendamentos WHERE id = ?';
         const [linhas] = await pool.execute (sql, [id]);
         return linhas[0];
+    },
+
+    ApagarPorData: async () => {
+        const sql = ''
     }
     
 }

@@ -4,6 +4,10 @@ import styled from "styled-components";
 import api from "../../services/api";
 import { toast } from 'react-toastify';
 import Swal from 'sweetalert2';
+import imagem from '../../assets/Framento.png';
+import { jwtDecode } from "jwt-decode";
+import socket from '../../services/socket';
+
 
 const Container = styled.div`
   min-height: 100vh;
@@ -20,9 +24,22 @@ const Navbar = styled.nav`
   box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 `;
 
-const Logo = styled.h2`
-  color: #052c55;
+const Logo = styled.img`
+  height: 61px;
+  width: 300px;
+  object-fit: contain;
+`;
+
+const NameWelcome = styled.h2`
+  color: #000000;
   text-align: center;
+`;
+
+const ButtonGroup = styled.div`
+  display: flex;
+  gap: 10px;
+  align-items: center;
+
 `;
 
 const LogoutButton = styled.button`
@@ -42,6 +59,8 @@ const LogoutButton = styled.button`
 `;
 
 const CadastroButton = styled.button`
+  background: transparent;
+  border: 1px solid #2538e2;
   color: #0400ffd3;
   padding: 8px 16px;
   border-radius: 4px;
@@ -49,7 +68,7 @@ const CadastroButton = styled.button`
   font-weight: bold;
   transition: all 0.2s;
   display: flex;
-  text-align: right;
+  text-align: left;
 
 
    &:hover {
@@ -93,7 +112,7 @@ const NewReserveButton = styled.button`
 const RoomsGrid = styled.div`
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-  gap: 20px;
+  gap: 45px;
 `;
 
 const RoomCard = styled.div`
@@ -105,6 +124,7 @@ const RoomCard = styled.div`
   
   h3 { margin-top: 0; color: #000000; }
   p { color: #292929; font-size: 14px; }
+
 `;
 
 const ScheduleList = styled.div`
@@ -115,8 +135,8 @@ const ScheduleList = styled.div`
 `;
 
 const ScheduleItem = styled.div`
-  padding: 17px 22px;
-  border-bottom: 1px solid #eee;
+  padding: 20px 10px;
+  border-bottom: 5px solid #ffffff;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -130,32 +150,39 @@ const ScheduleItem = styled.div`
   }
 
   strong { color: #000000; }
-  span { font-size: 15px; color: #000000af; }
+  span { font-size: 15px; color: #000000d5; }
 
   button {
-    background: #fff0f0;
-    color: #dc3545;
+    background: #1bca03c4;
+    color: #000000;
     border: none;
-    padding: 10px 15px;
+    padding: 10px 20px;
     border-radius: 4px;
     cursor: pointer;
     font-size: 12px;
     
-    &:hover { background: #dc3545; color: white; }
+    &:hover { background: #1eff00; color: white; }
   }
 `;
 
-const ImageBackgound = styled.body`
-  background-image: url("C:\Users\Andrei TI\Desktop\sistema-agendamento\front-agendamento\FRAMENTO.png");
-  background-size: cover; 
-  background-repeat: no-repeat; 
-  background-position: center;
-  background-attachment: fixed;
-`
+
 
 function Dashboard() {
   const navigate = useNavigate();
 
+  const token = localStorage.getItem('token');
+
+  let emailUsuario = "";
+
+  if (token) {
+    try{
+    const dadosToken = jwtDecode(token);
+
+    emailUsuario = dadosToken.email;
+    } catch (err) {
+      toast.error("Erro ao ler token! " + err)
+    }
+  }
   const nomeUsuario = localStorage.getItem('nomeUsuario' || "Visitante");
   const [salas, setSalas] = useState([]);
   const [agendamentos, setAgendamentos] = useState([]);
@@ -172,9 +199,16 @@ function Dashboard() {
         console.error("Erro ao buscar dados", error);
     }
   }
-
   useEffect(() => {
+
     carregarDados();
+
+     socket.on('atualizaAgendamento', () => {
+            console.log("O servidor avisou que tem coisa nova...");
+            carregarDados();
+        })
+        return () => socket.off('atualizaAgendamento');
+    
   }, []);
 
   async function handleDelete(id) {
@@ -219,7 +253,7 @@ function Dashboard() {
 
   function handleCadastro() {
 
-    if (nomeUsuario == "Recepção" || nomeUsuario == "Teste Admin") {
+    if (emailUsuario == "recepcao@transframento.com.br" || emailUsuario == "teste@teste.com") {
       navigate('/cadastro');
     } else {
       toast.error('Você não tem permissão para cadastrar novos usuários!')
@@ -231,15 +265,19 @@ function Dashboard() {
     
     <Container>
       <Navbar>
-        <Logo>Olá {nomeUsuario}! </Logo>
+        <NameWelcome>Olá {nomeUsuario}! </NameWelcome>
+        <a href='https://framento.com.br/'>
+        <Logo src={imagem} alt='Logo Sistema'></Logo>
+        </a>
+        <ButtonGroup>
         <CadastroButton onClick={handleCadastro}>Cadastrar usuario</CadastroButton>
         <LogoutButton onClick={handleLogout}>Sair</LogoutButton>
-        
+        </ButtonGroup>
 
       </Navbar>
 
       <Content>
-        
+      
         <Section>
             <SectionHeader>
                 <h2>Nossas Salas</h2>
@@ -262,7 +300,7 @@ function Dashboard() {
             <h2>Agenda de Reuniões</h2>
             <ScheduleList>
                 {agendamentos.length === 0 && (
-                    <div style={{padding: 28, textAlign: 'center', color: '#999'}}>
+                    <div style={{padding: 30, textAlign: 'center', color: '#000000'}}>
                         Nenhuma reunião agendada.
                     </div>
                 )}
@@ -274,40 +312,30 @@ function Dashboard() {
             <strong>{item.titulo}</strong>
             <span>Sala: {item.nome_sala} | Resp: {item.nome_usuario}</span>
             <span>
-                🕒 {formatarData(item.data_inicio)} até {formatarData(item.data_fim)}
+                🕒 {formatarData(item.data_inicio)} até {formatarData(item.data_fim)}    
             </span>
         </div>
         
         <div style={{display: 'flex', gap: '10px', alignItems: 'center'}}>
             
-            <button 
-                style={{
-                    backgroundColor: '#ffc107', 
-                    color: '#000', 
-                    border: 'none', 
-                    padding: '8px 12px', 
-                    borderRadius: '4px', 
-                    cursor: 'pointer',
-                    fontSize: '16px'
-                }}
+            <button    
                 onClick={() => navigate(`/editar/${item.id}`)}
                 title="Editar Reserva"
-            >
-                ✏️
-            </button>
 
+            >
+                Editar Reserva
+            </button>    
             <button 
                 onClick={() => handleDelete(item.id)}
                 style={{
                     backgroundColor: '#fff0f0',
-                    color: '#dc3545',
+                    color: '#d80101',
                     border: 'none',
                     padding: '10px 14px',
                     borderRadius: '6px',
                     cursor: 'pointer',
-                    fontWeight: 'bold'
-                }}
-            >
+                    fontWeight: 'bold',
+                }}>
                 Cancelar
             </button>
         </div>

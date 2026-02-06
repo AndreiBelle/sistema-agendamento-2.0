@@ -24,7 +24,7 @@ const login = async (req, res) => {
         const senhaValida = await bcrypt.compare(password, usuario.senha);
 
         const token = jwt.sign(
-            {id : usuario.id, nome: usuario.nome},
+            {id : usuario.id, nome: usuario.nome, email: usuario.email},
             JWT_SECRET,
             {expiresIn: '8h'}
         );

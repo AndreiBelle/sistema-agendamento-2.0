@@ -35,6 +35,23 @@ const FormCard = styled.div`
     background-repeat: no-repeat;
 `;
 
+const LogoutButton = styled.button`
+  background: transparent;
+  border: 1px solid #dc3545;
+  color: #dc3545;
+  padding: 0.8rem 106px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: all 0.2s; 
+
+
+  &:hover {
+    background-color: #dc3545;
+    color: white;
+  }
+`;
+
 const InputGroup = styled.div`
     margin-bottom: 1rem
 
@@ -98,41 +115,59 @@ function Cadastro() {
 
             toast.success("Usuário Cadastrado")
             navigate('/dashboard')
-        }catch (err) {
+        }catch (err) {  
+            if(err.response){
+                if (err.response.status == 409) {
+                    console.log("Erro ao Cadastrar: " + err);
+                    toast.error('Erro ao Cadastrar, Usuário já existe!');
+                } else if (err.response == 500) {
+                    console.log("Erro ao Cadastrar: SERVIDOR! " + err);
+                    toast.error('Erro ao Cadastrar, erro interno no servidor, tente mais tarde!');
+                } else {
+                    console.log("Erro ao Cadastrar: problema inesperado " + err);
+                    toast.error('Erro ao Cadastrar, problema inesperado!');
+                }
+            }
+   
+        }
 
-            console.log("Erro ao Cadastrar: " + err);
-            toast.error("Erro interno!" + err);
-    } 
+    }
+
+    const Logout = () => {
+        navigate('/dashboard')
+    }
+
+    return (
+            <Container>
+                <FormCard>
+                    <form onSubmit={EnviarDados}>
+                        <h2></h2>
+                        
+                        <InputGroup>
+                            <label>Nome</label>
+                            <input value={nome} onChange={(e) => setNome(e.target.value)} required />
+                        </InputGroup>
+
+                        <InputGroup>
+                            <label>Email</label>
+                            <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} required />
+                        </InputGroup>
+
+                        <InputGroup>
+                            <label>Senha</label>
+                            <input type="password" value={senha} onChange={(e) => setSenha(e.target.value)} required />
+                        </InputGroup>
+                        <br></br> 
+                        <Button type="submit">Enviar</Button>
+                    </form>
+                    <br></br>
+                    <LogoutButton onClick={Logout}>Sair</LogoutButton>
+                </FormCard>
+                
+            </Container>
+        );
+
+
 }
-
-return (
-        <Container>
-            <FormCard>
-                <form onSubmit={EnviarDados}>
-                    <h2></h2>
-                    
-                    <InputGroup>
-                        <label>Nome</label>
-                        <input value={nome} onChange={(e) => setNome(e.target.value)} required />
-                    </InputGroup>
-
-                    <InputGroup>
-                        <label>Email</label>
-                        <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} required />
-                    </InputGroup>
-
-                    <InputGroup>
-                        <label>Senha</label>
-                        <input type="password" value={senha} onChange={(e) => setSenha(e.target.value)} required />
-                    </InputGroup>
-                        <br></br>
-                    <Button type="submit">Enviar</Button>
-                </form>
-            </FormCard>
-        </Container>
-    );
-
-}
-
 export default Cadastro;
 

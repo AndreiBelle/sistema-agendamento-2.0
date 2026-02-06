@@ -1,5 +1,5 @@
-//
 const agendamentosModel = require('../models/agendamentosModel');
+
 
 module.exports = {
     listarAgendamentos: async (req, res) => {
@@ -32,11 +32,18 @@ module.exports = {
                 });
             }
         const novoAgendamento = await agendamentosModel.salvar({sala_id, usuario_id, titulo, data_inicio, data_fim});
+          const { io } = require('../../server');
+
+
+            io.emit('atualizaAgendamento');  
         return res.status(201).json(novoAgendamento)}
+        
         catch (err) {
             console.error(err);
             return res.status(500).json({mensagem: "Erro ao salvar agendamento, tente novamente mais tarde."});
         }
+
+        
     },
 
     CancelarAgendamento: async (req, res) => {

@@ -3,7 +3,7 @@ import { useState } from "react";
 import styled from "styled-components";
 import {useNavigate} from 'react-router-dom'
 import { toast } from 'react-toastify'
-
+import imagem from '../../assets/logoFramento.png';
 
 const Container = styled.div`
     display: flex;
@@ -30,6 +30,11 @@ const Form = styled.form`
     width: 100%;
     max-width: 400px;
     gap: 15px;
+
+    background-image: url(${imagem});
+    background-size: 45px;
+    background-position: 10px 5px;
+    background-repeat: no-repeat;
 `;
 
 const Input = styled.input`
